@@ -44,6 +44,24 @@ public class SFDC_UtilityCtlr {
     }
     
     @AuraEnabled
+    public static Map<String, Object> removeMetadata(String mdtData) {
+        System.debug(mdtData);
+        List<Object> mdts = (List<Object>)JSON.deserializeUntyped(mdtData);
+        for (Object mdt: mdts) {
+            Map<String, Object> data = (Map<String, Object>)mdt;
+            String mdtType = data.get('type') + '';
+            List<Object> records = (List<Object>)data.get('data');
+            Set<String> mdtNames = new Set<String>();
+            for (Object rec: records) {
+                mdtNames.add(mdtType+'.'+rec + '');
+            }
+            System.debug(data.get('type')+'');
+            MetadataService.DeleteResult[] res = mdApiService.deleteMetadata('CustomMetadata', new List<String>(mdtNames));
+            System.debug(res);
+        }
+        return null;
+    }
+    @AuraEnabled
     public static Map<String, Object> deployMetadata(String mdtData) {
         System.debug(mdtData);
         List<MetadataService.Metadata> mdtList = new List<MetadataService.Metadata>();

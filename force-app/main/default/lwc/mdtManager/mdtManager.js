@@ -2,6 +2,7 @@ import { LightningElement, track } from 'lwc';
 import apex_getInitData from '@salesforce/apex/SFDC_UtilityCtlr.getInitData';
 import apex_getAllMetadata from '@salesforce/apex/SFDC_UtilityCtlr.getAllMetadata';
 import apex_deployMetadata from '@salesforce/apex/SFDC_UtilityCtlr.deployMetadata';
+import apex_removeMetadata from '@salesforce/apex/SFDC_UtilityCtlr.removeMetadata';
 export default class MdtManager extends LightningElement {
     @track
     data = { allowMdtSelect: false, dvName:'DeveloperName', dvLabel: 'Custom Metadata Record Name' };
@@ -12,6 +13,9 @@ export default class MdtManager extends LightningElement {
 
     connectedCallback() {
         this._loadMetadata();
+    }
+    get disallowDelete() {
+        return this.metadataConfig?.allowDelete !== true;
     }
     _prepareSelectedMdt() {
         let self = this;
@@ -219,6 +223,7 @@ export default class MdtManager extends LightningElement {
             .then(result => {
                 self.metadataConfig.draftValues = [];
                 console.log(result);
+                // self._getAllMetadata(self.data.mdtName);
             })
             .catch(error => {
                 console.log(error);
@@ -295,6 +300,17 @@ export default class MdtManager extends LightningElement {
             }, 100)
         }
     }
+    handleRowSelectedName(evt) {
+        console.log('handleRowSelectedName', JSON.stringify(evt.detail));
+        let self = this;
+        const selectedRows = evt.detail.selectedRows;
+        // Display that fieldName of the selected rows
+        for (let i = 0; i < selectedRows.length; i++) {
+            console.log('You selected: ' + selectedRows[i]);
+        }
+        self.metadataConfig.selectedRows = evt.detail.selectedRows;
+        self.metadataConfig.allowDelete = evt.detail.selectedRows.length > 0;
+    }
     handleCheck(evt) {
         console.log('handleAddMetadata>', JSON.stringify(this.metadataConfig));
     }
@@ -316,5 +332,54 @@ export default class MdtManager extends LightningElement {
         console.log('=>>')
         // this._validate();
         this.handleDeployMetadata();
+    }
+    handleDeleteMetadata() {
+        console.log('handleDeleteMetadata');
+        let self = this;
+        let data = {};
+        console.log('->>> ',self.metadataConfig.selectedRows);
+        console.log('->>> ',JSON.stringify(self.metadataConfig.selectedRows));
+        self.metadataConfig.isLoading = self.metadataConfig.selectedRows.length > 0;
+        self.metadataConfig.selectedRows.forEach(rec => {
+            if (rec.Id.indexOf('new-') === -1) {
+                data[rec.DeveloperName] = true;
+            }
+        })
+        data = Object.keys(data);
+        console.log(JSON.stringify(data));
+        if (data.length > 0) {
+            data = [{
+                type: self.metadataConfig.type,
+                data: data
+            }];
+            apex_removeMetadata({ 
+                mdtData: JSON.stringify(data) 
+            })
+            .then(result => {
+                // self.metadataConfig.draftValues = [];
+                // console.log(result);
+            })
+            .catch(error => {
+                console.log(error);
+            })
+            .finally(() => {
+                console.log('handleDeleteMetadata finally');
+                self.metadataConfig.isLoading = false;
+            })
+        } else {
+            setTimeout(() => {
+                self.metadataConfig.isLoading = false;
+            }, 1000)
+        }
+        // self.metadataConfig.draftValues.forEach(rec => {
+        //     if (data[rec.Id]) {
+        //         for (let key in rec) {
+        //             console.log(key, rec[key], data[rec.Id][key]);
+        //             data[rec.Id][key] = rec[key];
+        //         }
+        //     }
+        // })
+        // console.log('---', JSON.stringify(data));
+        // return { isValidate: true, data: Object.values(data) };
     }
 }

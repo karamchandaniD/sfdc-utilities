@@ -84,7 +84,8 @@
 							</lightning-button>
 							<!-- class="slds-theme_error" -->
 							<lightning-button-icon variant="border-filled" icon-name="utility:delete" 
-								alternative-text="Delete Selected Metadata" onclick={handleAddMetadata}>
+								alternative-text="Delete Selected Metadata" onclick={handleDeleteMetadata}
+								disabled={disallowDelete}>
 							</lightning-button-icon>
 							<!-- class="slds-theme_success" -->
 							<lightning-button-icon variant="border-filled" icon-name="utility:add" 
@@ -101,8 +102,9 @@
 							</lightning-spinner>
 							<c-advanced-datatable show-row-number-column
 								columns={metadataConfig.columns} data={metadataConfig.data} draft-values={metadataConfig.draftValues}
-								oncellchange={handleCellChange} oncancel={handleCancelDatatable} onsave={handleSaveDatatable}
 								is-loading={metadataConfig.isLoading}
+								oncellchange={handleCellChange} oncancel={handleCancelDatatable} onsave={handleSaveDatatable}
+								onrowselection={handleRowSelectedName}
 								key-field="Id">
 							</c-advanced-datatable>
 						</lightning-layout-item>
@@ -121,7 +123,8 @@
 							</div> -->
 						</div>
 						<div class="slds-notify slds-notify_alert slds-notify_alert" role="alert">
-							<lightning-icon icon-name="utility:info" size="x-small" alternative-text="warning" class="slds-m-right_xx-small">
+							<lightning-icon icon-name="utility:info" size="x-small" alternative-text="warning" class="slds-m-right_xx-small"
+								variant="inverse">
 							</lightning-icon>
 							<h2>Columns visible in the table will only be syncing.
 							</h2>
@@ -129,6 +132,17 @@
 								<lightning-button-icon variant="bare" size="small" icon-name="utility:close" alternative-text="Close">
 								</lightning-button-icon>
 							</div> -->
+						</div>
+						<div class="slds-notify slds-notify_alert slds-alert_error" role="alert" if:false={disallowDelete}>
+							<lightning-icon icon-name="utility:error" size="x-small" alternative-text="warning" class="slds-m-right_x-small">
+							</lightning-icon>
+							<h2>
+								Once deleted will not be able to recover.
+							</h2>
+							<!-- <div class="slds-notify__close">
+								<lightning-button-icon variant="bare" size="small" icon-name="utility:close" alternative-text="Close">
+								</lightning-button-icon>
+							</div>  -->
 						</div>
 					</div>
 				</lightning-card>
