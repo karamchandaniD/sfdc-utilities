@@ -1,0 +1,168 @@
+<template>
+	<div class="slds-tabs_card">
+		<div class="slds-page-header">
+			<div class="slds-page-header__row">
+				<div class="slds-page-header__col-title">
+					<div class="slds-media">
+						<div class="slds-media__figure">
+							<span class="slds-icon_container slds-icon-standard-opportunity">
+							<lightning-icon icon-name="standard:opportunity"></lightning-icon>
+						</span>
+						</div>
+						<div class="slds-media__body">
+							<div class="slds-page-header__name">
+								<div class="slds-page-header__name-title">
+									<h1>
+										<span class="slds-page-header__title slds-truncate" title="Metadata Manager">Metadata Manager</span>
+									</h1>
+								</div>
+							</div>
+							<p class="slds-page-header__name-meta">Multipe Purpose Single Screen</p>
+						</div>
+					</div>
+				</div>
+				<div class="slds-page-header__col-actions">
+					<div class="slds-page-header__controls">
+						<div class="slds-page-header__control">
+							<c-listbox options={data.metadata} disabled if:false={data.allowMdtSelect}>
+							</c-listbox>
+							<c-listbox options={data.metadata} if:true={data.allowMdtSelect}
+								value={data.mdtName} data-key="listbox-mdt" onchange={handleChange}>
+							</c-listbox>
+						</div>
+						<div class="slds-page-header__control">
+							<lightning-button-icon variant="border-filled" icon-name="utility:refresh"
+								alternative-text="Refresh List" onclick={handleRefresh}>
+							</lightning-button-icon>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="slds-page-header__row slds-m-top_xx-small">
+				<div class="slds-page-header__col-meta">
+					<p class="slds-page-header__meta-text" if:true={data.selectedOption}>
+						{data.selectedOption.label} • {data.selectedOption.value}
+					</p>
+				</div>
+				<div class="slds-page-header__col-controls">
+					<div class="slds-page-header__controls">
+						<div class="slds-page-header__control" if:true={metadataConfig}>
+							<lightning-input type="search" variant="label-hidden" name="name"
+								placeholder="Search within list..">
+							</lightning-input>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="slds-page-header__row slds-page-header__row_gutters">
+			<div class="slds-page-header__col-details slds-m-top_small">
+				<lightning-card if:true={metadataConfig}>
+					<div slot="actions">
+						<!-- <lightning-button-group>
+							<lightning-button-icon variant="border-inverse" icon-name="utility:delete" class="slds-theme_error"
+								alternative-text="Delete Selected Metadata" onclick={handleAddMetadata}>
+							</lightning-button-icon>
+							<lightning-button-icon variant="border-inverse" icon-name="utility:add" class="slds-theme_success"
+								alternative-text="Add Metadata" onclick={handleAddMetadata}>
+							</lightning-button-icon>
+						</lightning-button-group> -->
+						<lightning-button-group>
+							<!-- <lightning-button label="Check" title="Check"
+								onclick={handleCheck}>
+							</lightning-button>
+							<lightning-button label="Add Metadata" title="Add Metadata"
+								variant="brand"
+								onclick={handleAddMetadata}>
+							</lightning-button>
+							<lightning-button label="Deploy Metadata" title="Deploy Metadata" onclick={handleDeployMetadata}>
+							</lightning-button> -->
+							<lightning-button label="Configure Columns" title="Configure Columns"
+								icon-name="utility:settings" icon-position="right" 
+								data-key="configure-column" data-index={metadataConfig.type} 
+								onclick={handleClick}>
+							</lightning-button>
+							<!-- class="slds-theme_error" -->
+							<lightning-button-icon variant="border-filled" icon-name="utility:delete" 
+								alternative-text="Delete Selected Metadata" onclick={handleAddMetadata}>
+							</lightning-button-icon>
+							<!-- class="slds-theme_success" -->
+							<lightning-button-icon variant="border-filled" icon-name="utility:add" 
+								alternative-text="Add Metadata" onclick={handleAddMetadata}>
+							</lightning-button-icon>
+							<lightning-button-icon variant="border-filled" icon-name="utility:refresh"
+								alternative-text="Refresh Metadata List" onclick={handleRefreshMetaData}>
+							</lightning-button-icon>
+						</lightning-button-group>
+					</div>
+					<lightning-layout multiple-rows>
+						<lightning-layout-item size="12">
+							<lightning-spinner alternative-text="Loading" variant="brand" size="medium" if:true={metadataConfig.isLoading}>
+							</lightning-spinner>
+							<c-advanced-datatable show-row-number-column
+								columns={metadataConfig.columns} data={metadataConfig.data} draft-values={metadataConfig.draftValues}
+								oncellchange={handleCellChange} oncancel={handleCancelDatatable} onsave={handleSaveDatatable}
+								is-loading={metadataConfig.isLoading}
+								key-field="Id">
+							</c-advanced-datatable>
+						</lightning-layout-item>
+					</lightning-layout>
+					<div slot="footer">
+						<div class="slds-notify slds-notify_alert slds-alert_warning" role="alert">
+							<!--More icon please visit : https://www.lightningdesignsystem.com/icons/ -->
+							<lightning-icon icon-name="utility:warning" size="x-small" alternative-text="warning" class="slds-m-right_xx-small">
+							</lightning-icon>
+							<h2>
+								Record will be override if metadata {data.dvLabel} (<b>{data.dvName}</b>) is already exists.
+							</h2>
+							<!-- <div class="slds-notify__close">
+								<lightning-button-icon variant="bare" size="small" icon-name="utility:close" alternative-text="Close">
+								</lightning-button-icon>
+							</div> -->
+						</div>
+						<div class="slds-notify slds-notify_alert slds-notify_alert" role="alert">
+							<lightning-icon icon-name="utility:info" size="x-small" alternative-text="warning" class="slds-m-right_xx-small">
+							</lightning-icon>
+							<h2>Columns visible in the table will only be syncing.
+							</h2>
+							<!-- <div class="slds-notify__close">
+								<lightning-button-icon variant="bare" size="small" icon-name="utility:close" alternative-text="Close">
+								</lightning-button-icon>
+							</div> -->
+						</div>
+					</div>
+				</lightning-card>
+			</div>
+		</div>
+	</div>
+	<template if:true={metadataConfig}>
+		<section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-config-columns"
+			class="slds-modal slds-modal_medium slds-fade-in-open" if:true={metadataConfig.allowConfig}>
+			<div class="slds-modal__container">
+				<lightning-button-icon variant="border-inverse" size="small" icon-name="utility:close" alternative-text="close" class="slds-modal__close"
+					onclick={handleClickConfigCancel}>
+				</lightning-button-icon>
+				<div class="slds-modal__header">
+					<h1 id="modal-config-columns" class="slds-modal__title slds-hyphenate">Configure Columns</h1>
+				</div>
+				<div class="slds-modal__content slds-p-around_medium" id="modal-config-columns-content">
+					<lightning-dual-listbox 
+						data-key="listbox-column"
+						name="languages" variant="label-hidden"
+						options={metadataConfig.options} required-options={metadataConfig.requiredOptions}
+						value={metadataConfig.value}
+						onchange={handleChange}>
+					</lightning-dual-listbox>
+					<!-- field-level-help="This is a dual listbox" -->
+				</div>
+				<div class="slds-modal__footer">
+					<lightning-button label="Cancel" onclick={handleClickConfigCancel} class="slds-p-right_small">
+					</lightning-button>
+					<lightning-button variant="brand" label="Save" onclick={handleClickConfigSave}>
+					</lightning-button>
+				</div>
+			</div>
+		</section>
+		<div class="slds-backdrop slds-backdrop_open" role="presentation" if:true={metadataConfig.allowConfig}></div>
+	</template>
+</template>

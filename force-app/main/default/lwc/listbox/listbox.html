@@ -1,0 +1,102 @@
+<template>
+    <div class="slds-form-element">
+        <div if:true={showLabel} >
+            <label class={labelClass}>
+                {label}&nbsp;
+            </label>
+            <lightning-helptext content={helptext} if:true={showHelptext}></lightning-helptext>    
+        </div>
+        <div class="slds-form-element__control">
+            <div class={comboboxClass}>
+                <div class="slds-combobox_container slds-has-selections" if:false={allowSelection}>
+                    <div class="slds-combobox">
+                      <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right">
+                        <div class="slds-dropdown_fluid slds-input_faux slds-combobox__input slds-combobox__input-value">
+                          <span class="slds-truncate">{singleSelectedOption.label}</span>
+                        </div>
+                        <button class="slds-button slds-button_icon slds-input__icon slds-input__icon_right" title="Remove selected option">
+                          <lightning-icon icon-name="utility:close" size="x-small" data-index={data.selectedIndex} onclick={handleSelection}></lightning-icon>
+                          <span class="slds-assistive-text">Remove selected option</span>
+                        </button>
+                      </div>
+                    </div>
+                </div>
+                <div class={lookupComboboxClass} data-key="lookupcombobox" role="combobox" if:true={allowSelection}>
+                    <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right">
+                        <span class={hasErrorClass}>
+                            <input type="text" class="slds-input" data-key={data.inputKey} role="textbox"
+                                placeholder={cplaceholder} autocomplete="off" onclick={handleClick}
+                                onkeydown={handleKeyDown} onkeyup={handleKeyUp} onfocus={handleFocus}
+                                onfocusout={handleFocusLost} onblur={handleBlur} disabled={disabled} />
+                        </span>
+                        <span
+                            class="slds-icon_container slds-icon-utility-search slds-input__icon slds-input__icon_right">
+                            <lightning-icon icon-name="utility:search" size="xx-small"></lightning-icon>
+                        </span>
+                    </div>
+                    <div id={listBoxKey} data-key={listBoxKey} class={listBoxClass} role="listbox"
+                        onclick={handlePanel}>
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <li if:true={data.noOptionFound} class="slds-listbox__item">
+                                <div class="slds-media slds-listbox__option_plain slds-media_small" role="option">
+                                    <span class="slds-media__figure">
+                                        <lightning-icon icon-name="utility:error" size="xx-small"
+                                            class="slds-icon_container">
+                                        </lightning-icon>
+                                    </span>
+                                    <span class="slds-media__body">
+                                        <span class="slds-truncate slds-listbox__item__action slds-p-left_xxx-small">
+                                            &nbsp;No Match Found
+                                        </span>
+                                    </span>
+                                </div>
+                            </li>
+                            <li if:true={showMasterSelection} class="slds-listbox__item"
+                                onmousedown={handleChangeMasterSelection}>
+                                <div class="slds-media  slds-listbox__option_plain slds-media_small slds-listbox__option"
+                                    role="option">
+                                    <span class="slds-media__body">
+                                        <span class="slds-truncate slds-listbox__item__action slds-p-left_xxx-small">
+                                            &nbsp;{selectAllOptionLabel}
+                                        </span>
+                                    </span>
+                                </div>
+                            </li>
+                            <!-- option iteration -->
+                            <li for:each={optionToDisplay} for:item="option" for:index="index" key={option.key}
+                                data-index={index} class={option.className} data-key={option.key}
+                                data-selected={option.selected} onmousedown={handleSelection} role="option"
+                                title={option.title} >
+                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small">
+                                    <span class="slds-media__figure">
+                                        <lightning-input type="checkbox" checked={option.checked} if:true={allowMultiSelection}
+                                            onclick={handleCheckClick} data-index={index}>
+                                        </lightning-input>
+                                        <span if:false={allowMultiSelection}>&nbsp;
+                                            <lightning-icon icon-name="utility:check" if:true={option.checked} size="x-small">
+                                            </lightning-icon>
+                                            <span class="slds-p-left_medium" if:false={option.checked}></span>
+                                        </span>
+                                    </span>
+                                    <span class="slds-media__body slds-listbox__item__action slds-p-left_xxx-small"
+                                        title={option.label} data-index={index} >
+                                        <span class="slds-truncate">
+                                            &nbsp;{option.label}
+                                        </span>
+                                        <span class="slds-listbox__item_count" if:true={option.displayInfo}>&nbsp;{option._info}</span>
+                                    </span>
+                                    <span class="slds-media__figure item_only-toggle" if:true={allowOnlySelection}>
+                                        <span class="slds-listbox" tabindex="0" data-index={index}
+                                            onmousedown={handleOptionOnlyClick}>&nbsp;<b>ONLY</b>
+                                        </span>
+                                    </span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</template>
