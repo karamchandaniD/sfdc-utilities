@@ -136,7 +136,8 @@ export default class Listbox extends LightningElement {
     _processOptions() {
         console.log('_processOptions');
         let self = this;
-        let selectedOptions = self.value.split(self.splitByChar);
+        let val = self.value;
+        let selectedOptions = val == '' ? [] : self.value.split(self.splitByChar);
         if (Array.isArray(self.data.options)) {
             self.data._options = [];
             self.data.options.forEach(function (option) {

@@ -69,7 +69,7 @@ export default class MdtManager extends LightningElement {
                 delete result.data.fields['Label'];
                 let cols = Object.values(result.data.fields),
                     columns = [];
-                console.log(cols.length);
+                // console.log(cols.length);
                 cols.forEach(col => {
                     col.type = col.typeTable;
                     col.fieldName = col.value;
@@ -86,7 +86,7 @@ export default class MdtManager extends LightningElement {
                         if (col.type == 'picklist') {
                             col.type = 'text';
                             // console.log(col.type, cl.optioons);
-                            console.log(JSON.stringify(col.options));
+                            // console.log(JSON.stringify(col.options));
                             col.typeAttributes.options = col.options;
                         }
                         col.editable = true;
